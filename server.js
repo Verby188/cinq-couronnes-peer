@@ -1,31 +1,36 @@
 const { PeerServer } = require('peer');
+const http = require('http');
 const https = require('https');
 
 const port = process.env.PORT || 9000;
 
+// "origin: true" accepts all origins including null (file:// WebView)
 const server = PeerServer({
   port: port,
   path: '/peerjs',
   allow_discovery: false,
-  cors: { origin: '*' }
+  cors: {
+    origin: true,
+    methods: ['GET', 'POST'],
+    credentials: false
+  }
 });
 
 server.on('connection', client => {
-  console.log('Client connected:', client.getId());
+  console.log('Connected:', client.getId());
 });
-
 server.on('disconnect', client => {
-  console.log('Client disconnected:', client.getId());
+  console.log('Disconnected:', client.getId());
 });
 
-console.log('PeerJS server running on port', port);
+console.log('PeerJS server on port', port);
 
-// Keep-alive: ping self every 14 minutes to avoid Render spin-down
-const SELF_URL = process.env.RENDER_EXTERNAL_URL;
-if (SELF_URL) {
+// Keep-alive ping every 14 min so Render free tier stays awake
+const SELF = process.env.RENDER_EXTERNAL_URL;
+if (SELF) {
   setInterval(() => {
-    https.get(SELF_URL + '/peerjs', res => {
-      console.log('Keep-alive ping:', res.statusCode);
+    https.get(SELF + '/peerjs', res => {
+      console.log('Keep-alive:', res.statusCode);
     }).on('error', () => {});
   }, 14 * 60 * 1000);
 }
