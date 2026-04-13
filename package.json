@@ -1,0 +1,15 @@
+{
+  "name": "cinq-couronnes-peer",
+  "version": "1.0.0",
+  "description": "PeerJS signaling server for Cinq Couronnes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "peer": "^0.6.1"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
